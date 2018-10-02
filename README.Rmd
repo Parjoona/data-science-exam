@@ -20,9 +20,9 @@ inspections.csv» som følger med eksamensoppgaven
 
 #### Including libraries
 ```{r, echo=T}
-library(ggplot2)
-library(magrittr)
-library(zipcode)
+library(ggplot2) # usage: plotting tool
+library(magrittr) # usage: pipeline
+library(zipcode) # usage: cleaning zipcodes
 ```
 
 #### Data preperation
