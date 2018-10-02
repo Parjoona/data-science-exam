@@ -1,10 +1,18 @@
-Untitled
+Eksamensoppgave INS300 Data Science – Høsten 2018
 ================
 
-GitHub Documents
-----------------
+### Oppgave utført av Khalid & Pär
 
-This is an R Markdown format used for publishing markdown documents to GitHub. When you click the **Knit** button all R code chunks are run and a markdown file (.md) suitable for publishing to GitHub is generated.
+Oppgave 1: Importering av data (5%)
+-----------------------------------
+
+Denne oppgaven innebærer å analysere og arbeide med et datasett. Du har to valgmuligheter:
+
+**1) Du kan bruke datasettet som er vedlagt i filen «restaurant-and-market-health- inspections.csv»**
+
+eller
+
+**2) Du kan velge et datasett fra nettstedet www.kaggle.com . Hvis du velger et eget datasett, skal dette godkjennes av Siri (email <siri.fagernes@kristiania.no> ) før du går i gang med oppgaven.**
 
 Including Code
 --------------
@@ -12,22 +20,15 @@ Including Code
 You can include R code in the document as follows:
 
 ``` r
-summary(cars)
+  dataset <- read.csv("csv/restaurant-and-market-health-inspections.csv")
 ```
 
-    ##      speed           dist       
-    ##  Min.   : 4.0   Min.   :  2.00  
-    ##  1st Qu.:12.0   1st Qu.: 26.00  
-    ##  Median :15.0   Median : 36.00  
-    ##  Mean   :15.4   Mean   : 42.98  
-    ##  3rd Qu.:19.0   3rd Qu.: 56.00  
-    ##  Max.   :25.0   Max.   :120.00
+Including ggplot2
+-----------------
 
-Including Plots
----------------
+``` r
+  library(ggplot2)
+  ggplot(dataset, aes(score, facility_zip)) + geom_point()
+```
 
-You can also embed plots, for example:
-
-![](README_files/figure-markdown_github/pressure-1.png)
-
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+![](README_files/figure-markdown_github/ggplot-1.png)
