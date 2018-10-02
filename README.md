@@ -1,25 +1,32 @@
 Eksamensoppgave INS300 Data Science – Høsten 2018
 ================
 
-### Oppgave utført av Khalid & Pär
-
 Oppgave 1: Importering av data (5%)
 -----------------------------------
 
 Denne oppgaven innebærer å analysere og arbeide med et datasett.
 
-**Vi har valgt at bruke filen «restaurant-and-market-health- inspections.csv» som følger med eksamensoppgaven**
+Vi har valgt at bruke filen «restaurant-and-market-health- inspections.csv» som følger med eksamensoppgaven
 
-### Including the dataset
+#### Including the dataset
 
 ``` r
   dataset <- read.csv("csv/restaurant-and-market-health-inspections.csv")
 ```
 
-### Including libraries
+#### Including libraries
 
 ``` r
-  library(ggplot2)
+library(ggplot2)
+library(magrittr)
+library(zipcode)
+```
+
+#### Data preperation
+
+``` r
+# cleaning zipcodes
+dataset$facility_zip <- clean.zipcodes(dataset$facility_zip)
 ```
 
 Oppgave 2: Dataforståelse (10%)

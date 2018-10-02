@@ -14,19 +14,21 @@ Vi har valgt at bruke filen «restaurant-and-market-health-
 inspections.csv» som følger med eksamensoppgaven
 
 #### Including the dataset
-
 ```{r}
   dataset <- read.csv("csv/restaurant-and-market-health-inspections.csv")
 ```
 
 #### Including libraries
+```{r, echo=T}
+library(ggplot2)
+library(magrittr)
+library(zipcode)
+```
 
-```{r ggplot, echo=T}
-  library(ggplot2)
-  library(magrittr)
-  pl <- ggplot(dataset, aes(grade, score)) + geom_point()
-  
-  
+#### Data preperation
+```{r, echo=T}
+# cleaning zipcodes
+dataset$facility_zip <- clean.zipcodes(dataset$facility_zip)
 ```
 
 ## Oppgave 2: Dataforståelse (10%)
@@ -36,7 +38,7 @@ attributter (egenskaper) de har, samt eventuelle relasjoner.**
 
 **2) Hva slags datatyper fins i datasettet? Gi konkrete eksempler og begrunn svaret ditt.**
 
-## Oppgave 3: Nytteverdi (15%)**
+## Oppgave 3: Nytteverdi (15%)
 
 **1) Hva kan du bruke datasettet til? Vis 3 forskjellige anvendelser, eller eksempler på verdi
 du kan få ut av datasettet.**
