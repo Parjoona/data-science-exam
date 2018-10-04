@@ -17,17 +17,79 @@ Vi har valgt at bruke filen «restaurant-and-market-health- inspections.csv» so
 #### Including libraries
 
 ``` r
-library(ggplot2)
-library(magrittr)
-library(zipcode)
+library(ggplot2) # usage: plotting tool
+library(magrittr) # usage: pipeline
+library(zipcode) # usage: cleaning zipcodes
+library(lubridate) # gives better date functions
 ```
+
+    ## 
+    ## Attaching package: 'lubridate'
+
+    ## The following object is masked from 'package:base':
+    ## 
+    ##     date
+
+``` r
+require(dplyr) # uses for data manipulation
+```
+
+    ## Loading required package: dplyr
+
+    ## 
+    ## Attaching package: 'dplyr'
+
+    ## The following objects are masked from 'package:lubridate':
+    ## 
+    ##     intersect, setdiff, union
+
+    ## The following objects are masked from 'package:stats':
+    ## 
+    ##     filter, lag
+
+    ## The following objects are masked from 'package:base':
+    ## 
+    ##     intersect, setdiff, setequal, union
 
 #### Data preperation
 
 ``` r
 # cleaning zipcodes
 dataset$facility_zip <- clean.zipcodes(dataset$facility_zip)
+# format the date from POSIX to more usable date format
+dataset$activity_date <- dataset$activity_date %>% as.Date()
+# uses lubridate to create new date columns
+dataset$activity_year <- dataset$activity_date %>% year()
+dataset$activity_month <- dataset$activity_date %>% month()
+dataset$activity_day <- dataset$activity_date %>% day()
+
+# Average per year
+dataset %>%
+ group_by(activity_year) %>% 
+ summarize(avg = mean(score)) %>% as.data.frame()
 ```
+
+    ##   activity_year      avg
+    ## 1          2015 92.89265
+    ## 2          2016 93.29184
+    ## 3          2017 93.39523
+    ## 4          2018 93.78681
+
+``` r
+# amount inspections done each year
+ggplot(dataset, aes(activity_year)) + geom_bar()
+```
+
+![](README_files/figure-markdown_github/unnamed-chunk-3-1.png)
+
+``` r
+# inspections on specific days, each year
+ggplot(dataset, aes(activity_day)) + 
+  geom_bar() + 
+  facet_grid(activity_year ~ .)
+```
+
+![](README_files/figure-markdown_github/unnamed-chunk-3-2.png)
 
 Oppgave 2: Dataforståelse (10%)
 -------------------------------
@@ -36,8 +98,8 @@ Oppgave 2: Dataforståelse (10%)
 
 **2) Hva slags datatyper fins i datasettet? Gi konkrete eksempler og begrunn svaret ditt.**
 
-Oppgave 3: Nytteverdi (15%)\*\*
--------------------------------
+Oppgave 3: Nytteverdi (15%)
+---------------------------
 
 **1) Hva kan du bruke datasettet til? Vis 3 forskjellige anvendelser, eller eksempler på verdi du kan få ut av datasettet.**
 
