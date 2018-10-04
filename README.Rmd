@@ -23,12 +23,19 @@ inspections.csv» som følger med eksamensoppgaven
 library(ggplot2) # usage: plotting tool
 library(magrittr) # usage: pipeline
 library(zipcode) # usage: cleaning zipcodes
+library(lubridate) # gives better date functions
 ```
 
 #### Data preperation
 ```{r, echo=T}
 # cleaning zipcodes
 dataset$facility_zip <- clean.zipcodes(dataset$facility_zip)
+# format the date from POSIX to more usable date format
+dataset$activity_date <- dataset$activity_date %>% strptime(format = "") %>% as.Date(format = "%b-%d-%y")
+# uses lubridate to create new date columns
+dataset$activity_year <- dataset$activity_date %>% year()
+dataset$activity_month <- dataset$activity_date %>% month()
+dataset$activity_day <- dataset$activity_date %>% day()
 ```
 
 ## Oppgave 2: Dataforståelse (10%)
