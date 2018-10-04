@@ -39,9 +39,10 @@ dataset$activity_month <- dataset$activity_date %>% month()
 dataset$activity_day <- dataset$activity_date %>% day()
 
 # Average per year
-dataset %>%
- group_by(activity_year) %>% 
- summarize(avg = mean(score)) %>% as.data.frame()
+dataset %>% 
+  group_by(activity_year) %>% 
+  summarize(average=mean(score)) %>% 
+  as.data.frame()
 
 # amount inspections done each year
 ggplot(dataset, aes(activity_year)) + geom_bar()
