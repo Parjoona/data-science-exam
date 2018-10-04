@@ -36,8 +36,16 @@ dataset$activity_date <- dataset$activity_date %>% as.Date()
 dataset$activity_year <- dataset$activity_date %>% year()
 dataset$activity_month <- dataset$activity_date %>% month()
 dataset$activity_day <- dataset$activity_date %>% day()
-```
 
+# Average per year
+require(dplyr)
+dataset %>% 
+ group_by(activity_year) %>% 
+ summarize(avg = mean(score))
+
+# amount inspections done each year
+ggplot(dataset, aes(activity_year)) + geom_bar()
+```
 ## Oppgave 2: Dataforståelse (10%)
 
 **1) Hva slags datasett er dette? Forklar hva slags objekter det er snakk om, og hva slags
