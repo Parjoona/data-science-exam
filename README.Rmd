@@ -24,6 +24,7 @@ library(ggplot2) # usage: plotting tool
 library(magrittr) # usage: pipeline
 library(zipcode) # usage: cleaning zipcodes
 library(lubridate) # gives better date functions
+require(dplyr) # uses for data manipulation
 ```
 
 #### Data preperation
@@ -38,13 +39,17 @@ dataset$activity_month <- dataset$activity_date %>% month()
 dataset$activity_day <- dataset$activity_date %>% day()
 
 # Average per year
-require(dplyr)
 dataset %>% 
  group_by(activity_year) %>% 
  summarize(avg = mean(score))
 
 # amount inspections done each year
 ggplot(dataset, aes(activity_year)) + geom_bar()
+
+# inspections on specific days, each year
+ggplot(dataset, aes(activity_day)) + 
+  geom_bar() + 
+  facet_grid(activity_year ~ .)
 ```
 ## Oppgave 2: Dataforståelse (10%)
 
