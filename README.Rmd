@@ -31,7 +31,7 @@ library(lubridate) # gives better date functions
 # cleaning zipcodes
 dataset$facility_zip <- clean.zipcodes(dataset$facility_zip)
 # format the date from POSIX to more usable date format
-dataset$activity_date <- dataset$activity_date %>% strptime(format = "") %>% as.Date(format = "%b-%d-%y")
+dataset$activity_date <- dataset$activity_date %>% as.Date()
 # uses lubridate to create new date columns
 dataset$activity_year <- dataset$activity_date %>% year()
 dataset$activity_month <- dataset$activity_date %>% month()
