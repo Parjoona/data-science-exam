@@ -28,6 +28,9 @@ data(zipcode) # usage: dataset for matching zipcodes
 library(lubridate) # usage: gives better date functions
 require(dplyr) # usage: data manipulation
 library(leaflet) # usage: creates a map with nodes
+
+# to install the development version from Github, run
+devtools::install_github("rstudio/leaflet")
 ```
 
 #### Data preperation
@@ -61,7 +64,7 @@ ggplot(dataset, aes(activity_day)) +
   facet_grid(activity_year ~ .)
 ```
 
-``` {r, echo=F, results="hide", warning=FALSE}
+``` {r, echo=T, warning=FALSE}
 # creates map
 mybins=seq(50, 100, by=10)
 mypalette = colorBin(palette="YlOrBr", domain=dataset$score, na.color="transparent", bins=mybins)
