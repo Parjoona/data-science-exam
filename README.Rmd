@@ -64,7 +64,7 @@ ggplot(dataset, aes(activity_day)) +
   facet_grid(activity_year ~ .)
 ```
 
-``` {r, echo=F, warning=FALSE}
+``` {r, echo=T, results="hide", warning=FALSE}
 # creates map
 mybins=seq(50, 100, by=10)
 mypalette = colorBin(palette="YlOrBr", domain=dataset$score, na.color="transparent", bins=mybins)
