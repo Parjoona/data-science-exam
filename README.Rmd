@@ -20,7 +20,7 @@ inspections.csv» som følger med eksamensoppgaven
 ```
 
 #### Including libraries
-```{r, echo=T}
+```{r, echo=T, message=FALSE}
 library(ggplot2) # usage: plotting tool
 library(magrittr) # usage: pipeline
 library(zipcode) # usage: cleaning zipcodes
@@ -31,7 +31,7 @@ library(leaflet) # usage: creates a map with nodes
 ```
 
 #### Data preperation
-```{r, echo=T}
+```{r, echo=T, warning=FALSE}
 # cleaning zipcodes
 dataset$facility_zip <- clean.zipcodes(dataset$facility_zip)
 # format the date from POSIX to more usable date format
@@ -61,7 +61,7 @@ ggplot(dataset, aes(activity_day)) +
   facet_grid(activity_year ~ .)
 ```
 
-``` {r, echo=F}
+``` {r, echo=F, results="hide", warning=FALSE}
 # creates map
 mybins=seq(50, 100, by=10)
 mypalette = colorBin(palette="YlOrBr", domain=dataset$score, na.color="transparent", bins=mybins)
