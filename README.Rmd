@@ -59,8 +59,10 @@ ggplot(dataset, aes(activity_year)) +
 ggplot(dataset, aes(activity_day)) + 
   geom_bar() + 
   facet_grid(activity_year ~ .)
+```
 
-# mapping out stuff
+``` {r, echo=F}
+# creates map
 mybins=seq(50, 100, by=10)
 mypalette = colorBin(palette="YlOrBr", domain=dataset$score, na.color="transparent", bins=mybins)
 
@@ -75,7 +77,9 @@ leaflet(dataset) %>%
     fillColor = ~mypalette(score), fillOpacity = 0.7, color="white", radius=8, stroke=FALSE,
     label = textnode,
     labelOptions = labelOptions(style = list("font-weight" = "normal", padding = "3px 8px"), textsize = "13px", direction = "auto")) %>%
-  addLegend(pal=mypalette, values=~score, opacity=0.7, title = "Grade", position = "bottomright" )
+  addLegend(pal=mypalette, values=~score, opacity=0.7, title = "Grade", position = "bottomright")
+
+# todo, clean the lat and long data
 ```
 
 ## Oppgave 2: Dataforståelse (10%)
