@@ -6,14 +6,17 @@ from sklearn.metrics import confusion_matrix
 from sklearn.preprocessing import StandardScaler
 from sklearn.naive_bayes import GaussianNB
 from sklearn.preprocessing import LabelEncoder
-from sklearn.neighbors import KNeighborsClassifier
+from sklearn import metrics
 
 dataset = pd.read_csv('newdataset.csv')
 
+dataset = dataset.drop(dataset.index[49492])
 ##Vasker facility_zips før det taes i bruk
 dataset['newzips'] = np.where(dataset['facility_zip'].str.len() == 5, 
                                    dataset['facility_zip'],
                                    dataset['facility_zip'].str[:5])
+
+
 
 '''
 proccesed_df = dataset.drop(['serial_number', 'activity_date', 'facility_name', 
@@ -45,9 +48,8 @@ y_pred = classifier.predict(x_test)
 
 cm = confusion_matrix(y_test, y_pred)
 
-
-'''
 y_test = y_test.reshape(-1, 1)
 
-print(classifier.score(y_test, y_pred))
-'''
+print("Classification report for classifier %s:\n%s\n"
+      % (classifier, metrics.classification_report(y_test, y_pred)))
+print("Confusion matrix:\n%s" % metrics.confusion_matrix(y_test, y_pred))
