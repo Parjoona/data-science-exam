@@ -20,36 +20,14 @@ Vi har valgt at bruke filen «restaurant-and-market-health- inspections.csv» so
 library(ggplot2) # usage: plotting tool
 library(magrittr) # usage: pipeline
 library(zipcode) # usage: cleaning zipcodes
-library(lubridate) # gives better date functions
+data(zipcode) # usage: dataset for matching zipcodes
+library(lubridate) # usage: gives better date functions
+require(dplyr) # usage: data manipulation
+library(leaflet) # usage: creates a map with nodes
+
+# to install the development version from Github, run
+devtools::install_github("rstudio/leaflet")
 ```
-
-    ## 
-    ## Attaching package: 'lubridate'
-
-    ## The following object is masked from 'package:base':
-    ## 
-    ##     date
-
-``` r
-require(dplyr) # uses for data manipulation
-```
-
-    ## Loading required package: dplyr
-
-    ## 
-    ## Attaching package: 'dplyr'
-
-    ## The following objects are masked from 'package:lubridate':
-    ## 
-    ##     intersect, setdiff, union
-
-    ## The following objects are masked from 'package:stats':
-    ## 
-    ##     filter, lag
-
-    ## The following objects are masked from 'package:base':
-    ## 
-    ##     intersect, setdiff, setequal, union
 
 #### Data preperation
 
@@ -63,21 +41,27 @@ dataset$activity_year <- dataset$activity_date %>% year()
 dataset$activity_month <- dataset$activity_date %>% month()
 dataset$activity_day <- dataset$activity_date %>% day()
 
+# getting longitude and latitude
+dataset$lng <- zipcode$longitude[match(dataset$facility_zip, zipcode$zip)]
+dataset$lat <- zipcode$latitude[match(dataset$facility_zip, zipcode$zip)]
+
 # Average per year
-dataset %>%
- group_by(activity_year) %>% 
- summarize(avg = mean(score)) %>% as.data.frame()
+dataset %>% 
+  group_by(activity_year) %>% 
+  summarize(average=mean(score)) %>% 
+  as.data.frame()
 ```
 
-    ##   activity_year      avg
+    ##   activity_year  average
     ## 1          2015 92.89265
     ## 2          2016 93.29184
     ## 3          2017 93.39523
     ## 4          2018 93.78681
 
 ``` r
-# amount inspections done each year
-ggplot(dataset, aes(activity_year)) + geom_bar()
+# amount inspections done each year # exchange fill #
+ggplot(dataset, aes(activity_year)) + 
+  geom_bar(fill = c("green", "red", "blue", "orange"))
 ```
 
 ![](README_files/figure-markdown_github/unnamed-chunk-3-1.png)
@@ -90,6 +74,27 @@ ggplot(dataset, aes(activity_day)) +
 ```
 
 ![](README_files/figure-markdown_github/unnamed-chunk-3-2.png)
+
+``` r
+# creates map
+mybins=seq(50, 100, by=10)
+mypalette = colorBin(palette="YlOrBr", domain=dataset$score, na.color="transparent", bins=mybins)
+
+# Prepar the text for the tooltip:
+textnode=paste("Grade: ", dataset$grade, "<br/>", "Score: ", dataset$score, sep="") %>% lapply(htmltools::HTML)
+
+leaflet(dataset) %>%
+  addTiles() %>%
+  setView(lat=34, lng=-118, zoom=10) %>%
+  addProviderTiles("Esri.WorldImagery") %>%
+  addCircleMarkers(~lng, ~lat, 
+    fillColor = ~mypalette(score), fillOpacity = 0.7, color="white", radius=8, stroke=FALSE,
+    label = textnode,
+    labelOptions = labelOptions(style = list("font-weight" = "normal", padding = "3px 8px"), textsize = "13px", direction = "auto")) %>%
+  addLegend(pal=mypalette, values=~score, opacity=0.7, title = "Grade", position = "bottomright")
+
+# todo, clean the lat and long data
+```
 
 Oppgave 2: Dataforståelse (10%)
 -------------------------------
