@@ -46,3 +46,18 @@ I denna kan du skriva in detta för att installer dem packages som behövs för 
 
 Installation av Python
 ----------------------
+
+Installering av Python for alle operativsystemer: <https://www.python.org/downloads/>
+Installering av Anaconda for alle operativsystemer: <https://www.anaconda.com/download/>
+
+### Hvordan kjøre programmet?
+
+Gå inn i Classifaction mappe
+
+    cd Classification/
+
+og deretter kjør følgende commando
+
+    python prediction.py
+
+Både klassifiseringsrapporten og confusion matrix vil bli printet ut i terminalen
