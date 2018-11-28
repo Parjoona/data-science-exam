@@ -1,11 +1,6 @@
 Eksamensoppgave INS300 Data Science – Høsten 2018
 ================
 
-Oppgave 1: Importering av data (5%)
------------------------------------
-
-Denne oppgaven innebærer å analysere og arbeide med et datasett.
-
 Vi har valgt at bruke filen «restaurant-and-market-health- inspections.csv» som følger med eksamensoppgaven
 
 #### Including the dataset
@@ -19,13 +14,15 @@ Vi har valgt at bruke filen «restaurant-and-market-health- inspections.csv» so
 ``` r
 library(ggplot2) # usage: plotting tool
 library(magrittr) # usage: pipeline
-library(zipcode) # usage: cleaning zipcodes
+library(zipcode) # usage: cleaning zipcodes / giving lat and lng coordinates
 data(zipcode) # usage: dataset for matching zipcodes
 library(lubridate) # usage: gives better date functions
 require(dplyr) # usage: data manipulation
 library(leaflet) # usage: creates a map with nodes
+library(leaflet.extras) # usage: to get heatmap
+library(htmlwidgets) # usage: save leaflet to html
 
-# to install the development version from Github, run
+# to install the development version from Github, run this command
 devtools::install_github("rstudio/leaflet")
 ```
 
@@ -45,81 +42,86 @@ dataset$activity_day <- dataset$activity_date %>% day()
 dataset$lng <- zipcode$longitude[match(dataset$facility_zip, zipcode$zip)]
 dataset$lat <- zipcode$latitude[match(dataset$facility_zip, zipcode$zip)]
 
+# clean away empty values in program_name
+dataset <- dataset[!is.na(dataset$program_name),]
+
+# clean away the empty value in grade
+dataset <- dataset[-c(49376),]
+
+# clean away empty values in lat and longitude values
+dataset <- dataset[!is.na(dataset$lat),]
+dataset <- dataset[!is.na(dataset$lng),]
+```
+
+#### Tabell mean score per år.
+
+``` r
 # Average per year
-dataset %>% 
+dataset %>%
   group_by(activity_year) %>% 
   summarize(average=mean(score)) %>% 
   as.data.frame()
 ```
 
     ##   activity_year  average
-    ## 1          2015 92.89265
-    ## 2          2016 93.29184
-    ## 3          2017 93.39523
-    ## 4          2018 93.78681
+    ## 1          2015 92.89445
+    ## 2          2016 93.29196
+    ## 3          2017 93.39620
+    ## 4          2018 93.78696
+
+#### Inspeksjoner årligt
 
 ``` r
-# amount inspections done each year # exchange fill #
-ggplot(dataset, aes(activity_year)) + 
-  geom_bar(fill = c("green", "red", "blue", "orange"))
-```
+# Gives a color scale for 31 days
+colorscale <- c('#cc0000','#c80001','#c40001','#be0002','#ba0002','#b60003','#b20003','#ad0004','#aa0004','#a50004','#a00005','#9d0005','#990005','#940005','#900005','#8b0005','#870005','#830005','#7f0005','#7b0005','#770005','#730004','#700004','#6c0004','#670003','#630003','#600002','#5d0002','#590001','#550001','#510000')
 
-![](README_files/figure-markdown_github/unnamed-chunk-3-1.png)
+# Removes inactive dates
+dataset_no_inactive <- dataset[dataset$program_status == "ACTIVE",]
 
-``` r
 # inspections on specific days, each year
-ggplot(dataset, aes(activity_day)) + 
-  geom_bar() + 
-  facet_grid(activity_year ~ .)
+ggplot(dataset_no_inactive, aes(activity_day)) + 
+  geom_bar(aes(fill = factor(activity_day))) + 
+  scale_fill_manual(values = colorscale) +
+  facet_grid(activity_year ~ .) + 
+  theme(legend.position = "left", strip.background = element_rect(colour = "#FFFFFF",fill = "#FFFFFF")) +
+  guides(fill = guide_legend("Day in each month")) +
+  ylab("Average amount of controls per month") + xlab("Days")
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-3-2.png)
+![](README_files/figure-markdown_github/unnamed-chunk-5-1.png)
+
+#### Kod för maps
 
 ``` r
-# creates map
-mybins=seq(50, 100, by=10)
-mypalette = colorBin(palette="YlOrBr", domain=dataset$score, na.color="transparent", bins=mybins)
+# Only shows results with: 
+# A
+sorted <- dataset[dataset$score <= 100 & dataset$score >= 90,]
+# B
+sorted <- dataset[dataset$score <= 89 & dataset$score >= 80,]
+# C
+sorted <- dataset[dataset$score <= 79 & dataset$score >= 64,]
+
+# sets the scale for the legend
+mybins=seq(64,79, by=1)
+# sets colors for everything in the maps
+mypalette = colorBin(palette="PuBu", domain=sorted$score, na.color="transparent", bins=mybins)
 
 # Prepar the text for the tooltip:
-textnode=paste("Grade: ", dataset$grade, "<br/>", "Score: ", dataset$score, sep="") %>% lapply(htmltools::HTML)
+textnode=paste("Grade: ", sorted$grade, "<br/>", "Score: ", sorted$score, "<br/>", "Zipcode: ", sorted$facility_zip, sep="") %>% lapply(htmltools::HTML)
 
-leaflet(dataset) %>%
+# Creates the map
+savedMap <- leaflet(sorted) %>%
   addTiles() %>%
   setView(lat=34, lng=-118, zoom=10) %>%
-  addProviderTiles("Esri.WorldImagery") %>%
+  addProviderTiles(providers$CartoDB) %>%
   addCircleMarkers(~lng, ~lat, 
-    fillColor = ~mypalette(score), fillOpacity = 0.7, color="white", radius=8, stroke=FALSE,
+    fillColor = ~mypalette(score), fillOpacity = 0.7, color="black", radius=8, stroke=TRUE,
     label = textnode,
     labelOptions = labelOptions(style = list("font-weight" = "normal", padding = "3px 8px"), textsize = "13px", direction = "auto")) %>%
-  addLegend(pal=mypalette, values=~score, opacity=0.7, title = "Grade", position = "bottomright")
+  addLegend(pal=mypalette, values=mybins, opacity=0.7, title = "Grade", position = "bottomright")
 
-# todo, clean the lat and long data
+# Saves to a html file for webview
+saveWidget(savedMap, file = "c-map.html", selfcontained = TRUE)
 ```
 
-Oppgave 2: Dataforståelse (10%)
--------------------------------
-
-**1) Hva slags datasett er dette? Forklar hva slags objekter det er snakk om, og hva slags attributter (egenskaper) de har, samt eventuelle relasjoner.**
-
-**2) Hva slags datatyper fins i datasettet? Gi konkrete eksempler og begrunn svaret ditt.**
-
-Oppgave 3: Nytteverdi (15%)
----------------------------
-
-**1) Hva kan du bruke datasettet til? Vis 3 forskjellige anvendelser, eller eksempler på verdi du kan få ut av datasettet.**
-
-**2) Er datasettet klart til å analyseres som det er, eller må noe bearbeides før bruk? Begrunn svaret ditt.**
-
-Oppgave 4: Analyse og modellering (40%)
----------------------------------------
-
-**1) Hvilke metoder vil du bruke for å analysere dataene, gitt minst en av anvendelsene du har nevnt over? Her bør du tenke over ting som modeller (f.eks. innen maskinlæring), statistiske metoder, visualiseringer og tilsvarende. Begrunn metodene du har valgt.**
-
-**2) Gjennomfør analysene som nevnt over.**
-
-Oppgave 5: Resultat og evaluering (30%)
----------------------------------------
-
-**1) Hva fikk du ut av dataene? Her skal du vise konkrete tall, figurer, visualiseringer og liknende.**
-
-**2) Gjennomfør en kritisk refleksjon over resultatet og innsikten du har kommet frem til. Gjør bruk av pensumlitteraturen og andre relevante kilder for å begrunne din argumentasjon.**
+länk till lösning: <https://exam-data-science.firebaseapp.com>
