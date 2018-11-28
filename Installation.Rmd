@@ -1,6 +1,6 @@
 ---
 title: "Installation guide"
-output: html_document
+output: github_document
 ---
 
 # Installationsguide av verktyg med anknytning till INS300

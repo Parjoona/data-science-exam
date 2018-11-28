@@ -118,6 +118,8 @@ savedMap <- leaflet(sorted) %>%
     labelOptions = labelOptions(style = list("font-weight" = "normal", padding = "3px 8px"), textsize = "13px", direction = "auto")) %>%
   addLegend(pal=mypalette, values=mybins, opacity=0.7, title = "Grade", position = "bottomright")
 
+savedMap
+
 # Saves to a html file for webview
 saveWidget(savedMap, file = "c-map.html", selfcontained = TRUE)
 ```
