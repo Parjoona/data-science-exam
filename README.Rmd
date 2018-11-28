@@ -1,6 +1,6 @@
 ---
 title: "Eksamensoppgave INS300 Data Science – Høsten 2018"
-output: github_document
+output: pdf_document
 always_allow_html: yes
 ---
 
